@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Diox Validator</title>
+    <link rel="stylesheet" href="validation.css">
+  </head>
+  <body>
+    <form class="validate" action="index.html" method="post" id="myform">
+      <div class="">
+        <input type="text" name="title" id="title" >
+      </div>
+      <input type="text" name="subtitle">
+      <input type="submit" value="Continue">
+    </form>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js">
+
+    </script>
+    <script type="text/javascript" src="validation.js"></script>
+    <script type="text/javascript">
+    var options = {
+      form : document.getElementsByClassName('validate')[0],
+      settings:{
+        // displayErrorAt: 'parent',
+      },
+      needsValidation:[{
+        'name' : 'title',
+        'type' : 'text',
+        'validate':{
+          'required' : true,
+          'text' : 'string',
+          'min'  : 2,
+          'max'  : 3,
+          'errorMessage': 'Please fill this shiet up',
+        }
+      },{
+        'name': 'subtitle',
+        'type' : 'email',
+        'validate':{
+          'required' : true,
+          'email' : 'string',
+          'errorMessage': 'What the fuck man',
+        }
+      }
+      ]
+    }
+      var val = new Validator(options).init();
+    </script>
+  </body>
+</html>

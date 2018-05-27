@@ -1,0 +1,17 @@
+.validator-error {
+  border: 1px solid red;
+  outline: none;
+}
+
+/* .validator-error::after {
+  content: 'xxx';
+  display: inline-block;
+  cursor: pointer;
+   width: 10px;
+   height: 10px;
+} */
+
+.validator-success {
+  border: 1px solid green;
+  outline: none;
+}

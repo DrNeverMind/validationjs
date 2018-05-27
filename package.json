@@ -1,0 +1,23 @@
+{
+  "name": "validationjs",
+  "version": "1.0.0",
+  "description": "Validation",
+  "main": "validation.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DrNeverMind/validationjs.git"
+  },
+  "keywords": [
+    "validation",
+    "js"
+  ],
+  "author": "DrNeverMind",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DrNeverMind/validationjs/issues"
+  },
+  "homepage": "https://github.com/DrNeverMind/validationjs#readme"
+}
