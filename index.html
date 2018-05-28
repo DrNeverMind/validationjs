@@ -7,21 +7,22 @@
   </head>
   <body>
     <form class="validate" action="index.html" method="post" id="myform">
-      <div class="">
-        <input type="text" name="title" id="title" >
+      <div class="col">
+        <input type="text" name="title" class="form-control" id="title" >
       </div>
-      <input type="text" name="subtitle">
+      <!-- <input type="text" name="subtitle"> -->
       <input type="submit" value="Continue">
     </form>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js">
 
     </script>
-    <script type="text/javascript" src="validation.js"></script>
+    <script type="text/javascript" src="validation-jquery.js"></script>
     <script type="text/javascript">
     var options = {
-      form : document.getElementsByClassName('validate')[0],
+      form :$('.validate'),
       settings:{
-        // displayErrorAt: 'parent',
+        displayErrorAt: 'parent',
       },
       needsValidation:[{
         'name' : 'title',

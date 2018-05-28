@@ -3,13 +3,21 @@
   outline: none;
 }
 
-/* .validator-error::after {
+.col{
+  width: 50%;
+  float: left;
+  position: relative;
+}
+.form-control{
+  width:100%;
+}
+
+.validator-error::after {
   content: 'xxx';
-  display: inline-block;
-  cursor: pointer;
-   width: 10px;
-   height: 10px;
-} */
+  position: absolute;
+  right: 3px;
+  top: 2px;
+}
 
 .validator-success {
   border: 1px solid green;

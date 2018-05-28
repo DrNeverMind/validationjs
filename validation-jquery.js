@@ -14,11 +14,11 @@ class Validator {
   init() {
     var t = this;
     // console.log(this.form[0].nodeName);
-    if (this.env) {
-      if (this.form.nodeName !== "FORM") {
-        throw "Form is not a proper form.";
-      }
-    }
+    // if (this.env) {
+    //   if (this.form.nodeName !== "FORM") {
+    //     throw "Form is not a proper form.";
+    //   }
+    // }
 
     //Foeach validation. type.
     if (t.needsValidation.length > 0) {
@@ -27,7 +27,8 @@ class Validator {
         t.pendingElements.push(item);
         //bind the listeners
         if (item.type === 'text' || item.type === 'email') {
-          document.getElementsByName(item.name)[0].addEventListener('input', function(e) {
+          $(t.form).find('[name="'+ item.name + '"]').on('input', function(e) {
+            console.log('xx');
             t.validate(item.validate, this.value, this);
           })
         }
@@ -35,7 +36,7 @@ class Validator {
         //for required i have chose focous out.
         //Change it to which ever feeds your needs.
         if (typeof item.validate.required !== "undefined" && item.validate.required) {
-          document.getElementsByName(item.name)[0].addEventListener('focusout', function(e) {
+          $(t.form).find('[name="'+ item.name + '"]').on('focusout', function(e) {
             t.validate(item.validate, this.value, this);
           })
         }
@@ -67,11 +68,11 @@ class Validator {
 
   handleErrors(action, element,validationSettings) {
     var t = this;
-    var target = (t.settings.displayErrorAt === 'element') ? document.getElementsByName(element.name)[0] : document.getElementsByName(element.name)[0].parentElement;
+    var target = (t.settings.displayErrorAt === 'element') ?   $(t.form).find('[name="'+ element.name + '"]') :   $(t.form).find('[name="'+ element.name + '"]').parent();
     if (action || action === 'success') {
-      t.classList(target).remove('validator-error').add('validator-success');
+      $(target).removeClass('validator-error').addClass('validator-success');
     } else if (!action || action === "failed") {
-      t.classList(target).remove('validator-success').add('validator-error');
+      $(target).removeClass('validator-success').addClass('validator-error');
       //add message based on the option
 
     }
