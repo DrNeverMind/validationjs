@@ -9,6 +9,9 @@ class Validator {
       maxErrorToDisplay: info.settings.maxErrorCount || 1,
     };
     this.pendingElements = [];
+    this.errors = {
+      template: '',
+    }
   }
   //Initialization.
   init() {
@@ -25,21 +28,21 @@ class Validator {
       t.needsValidation.forEach(function(item) {
         //add item as pending to be validated.
         t.pendingElements.push(item);
-        //bind the listeners
-        if (item.type === 'text' || item.type === 'email') {
-          $(t.form).find('[name="'+ item.name + '"]').on('input', function(e) {
-            console.log('xx');
+        // console.log(item.listeners.split("|").length);
+        item.listeners.split("|").forEach((listener) => {
+          $(t.form).find('[name="' + item.name + '"]').on(listener, function(e) {
+            t.validate(item.validate, this.value, this);
+          })
+        });
+
+        // //for required i have chose focous out.
+        //Change it to which ever feeds your needs.
+        if (typeof item.validate.required !== "undefined" && item.validate.required) {
+          $(t.form).find('[name="' + item.name + '"]').on('focusout', function(e) {
             t.validate(item.validate, this.value, this);
           })
         }
 
-        //for required i have chose focous out.
-        //Change it to which ever feeds your needs.
-        if (typeof item.validate.required !== "undefined" && item.validate.required) {
-          $(t.form).find('[name="'+ item.name + '"]').on('focusout', function(e) {
-            t.validate(item.validate, this.value, this);
-          })
-        }
       })
     }
   }
@@ -48,16 +51,24 @@ class Validator {
     var t = this;
     switch (rule) {
       case 'required':
-        t.validateRequired(input, element);
+        t.handleErrors(t.validateRequired(input, element), element);
         break;
       case 'email':
-        t.validateEmail(input, element);
+        t.handleErrors(t.validateEmail(input), element);
         break;
-      default:
-
+      case 'min':
+        t.handleErrors(t.validateMinLength(input, ruleParameters), element);
+        break;
+      case 'max':
+        t.handleErrors(t.validateMaxLength(input, ruleParameters), element);
+        break;
+      case 'type':
+      t.handleErrors(t.validateType(input,ruleParameters),element);
+      break;
     }
   }
   validate(validationRules, input, element) {
+    // console.log(element);
     var t = this;
     // console.log(validationRules,input);
     for (var rule in validationRules) {
@@ -66,9 +77,20 @@ class Validator {
     }
   }
 
-  handleErrors(action, element,validationSettings) {
+  checkProgress(){
+  }
+  //Notify that everything has been validated.
+  validationSuccess(){
+    $(window).trigger('validation-successful');
+  }
+
+  errorTemplate(validationSettings) {
+
+  }
+  handleErrors(action, element) {
     var t = this;
-    var target = (t.settings.displayErrorAt === 'element') ?   $(t.form).find('[name="'+ element.name + '"]') :   $(t.form).find('[name="'+ element.name + '"]').parent();
+    var target = (t.settings.displayErrorAt === 'element') ? $(t.form).find('[name="' + element.name + '"]') : $(t.form).find('[name="' + element.name + '"]').parent();
+
     if (action || action === 'success') {
       $(target).removeClass('validator-error').addClass('validator-success');
     } else if (!action || action === "failed") {
@@ -77,31 +99,37 @@ class Validator {
 
     }
   }
-  validateEmail(input, element) {
+
+  /**
+   * Validation Functions.
+   * Place below all the necessary functions,
+   * That validate the fields.
+   **/
+  validateEmail(input) {
     var emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    this.handleErrors(emailRegex.test(input), element);
+    return emailRegex.test(input);
   }
+
   validateRequired(input, element) {
-    this.handleErrors((input.length > 0), element);
+    if (element.nodeName === "INPUT") {
+      return (input.length > 0);
+    }
+  }
+  //min length.
+  validateMinLength(input, length) {
+    return (input.length > length);
+  }
+  //max length
+  validateMaxLength(input, length) {
+    return (input.length < length);
+  }
+  //
+  validateType(input,type){
+    return (typeof input === type);
   }
 
-  classList(elt) {
-    var list = elt.classList;
-
-    return {
-      toggle: function(c) {
-        list.toggle(c);
-        return this;
-      },
-      add: function(c) {
-        list.add(c);
-        return this;
-      },
-      remove: function(c) {
-        list.remove(c);
-        return this;
-      }
-    };
-
+  //regex
+  validateRegex(input,regex){
+    return input.test(regex);
   }
 }

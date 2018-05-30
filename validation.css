@@ -1,5 +1,6 @@
-.validator-error {
+.validator-error input{
   border: 1px solid red;
+  border-radius: 2px;
   outline: none;
 }
 
@@ -9,14 +10,22 @@
   position: relative;
 }
 .form-control{
+  display: block;
   width:100%;
 }
 
 .validator-error::after {
   content: 'xxx';
   position: absolute;
+  z-index: 100;
   right: 3px;
   top: 2px;
+}
+
+.validator-error:hover::before , .validator-error:active::before , .validator-error:focus::before{
+  content:'omg';
+  position: absolute;
+  right: -100px;
 }
 
 .validator-success {

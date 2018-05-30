@@ -11,7 +11,7 @@
         <input type="text" name="title" class="form-control" id="title" >
       </div>
       <!-- <input type="text" name="subtitle"> -->
-      <input type="submit" value="Continue">
+      <input type="submit" value="Continue" class="form-control">
     </form>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js">
@@ -26,17 +26,17 @@
       },
       needsValidation:[{
         'name' : 'title',
-        'type' : 'text',
+        'listeners' : 'input',
         'validate':{
           'required' : true,
-          'text' : 'string',
+          'type' : 'string',
           'min'  : 2,
-          'max'  : 3,
+          'max'  : 4,
           'errorMessage': 'Please fill this shiet up',
         }
       },{
         'name': 'subtitle',
-        'type' : 'email',
+        'listeners' : 'input',
         'validate':{
           'required' : true,
           'email' : 'string',
