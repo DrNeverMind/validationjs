@@ -4,13 +4,18 @@ class Validator {
     this.env = true;
     this.form = info.form;
     this.needsValidation = info.needsValidation || [];
+    this.pendingElements = [];
     this.settings = {
       displayErrorAt: info.settings.displayErrorAt || 'element',
       maxErrorToDisplay: info.settings.maxErrorCount || 1,
     };
-    this.pendingElements = [];
     this.errors = {
+      pending : [],
       template: '',
+    }
+    this.messages = {
+      min: info.messages.min || 'Min value',
+      max: info.messages.max || 'Max value',
     }
   }
   //Initialization.
@@ -27,7 +32,11 @@ class Validator {
     if (t.needsValidation.length > 0) {
       t.needsValidation.forEach(function(item) {
         //add item as pending to be validated.
-        t.pendingElements.push(item);
+        t.pendingElements.push({
+          'name': item.name,
+          'validate': item.validate,
+          'status' : false,
+        });
         // console.log(item.listeners.split("|").length);
         item.listeners.split("|").forEach((listener) => {
           $(t.form).find('[name="' + item.name + '"]').on(listener, function(e) {
@@ -37,11 +46,11 @@ class Validator {
 
         // //for required i have chose focous out.
         //Change it to which ever feeds your needs.
-        if (typeof item.validate.required !== "undefined" && item.validate.required) {
-          $(t.form).find('[name="' + item.name + '"]').on('focusout', function(e) {
-            t.validate(item.validate, this.value, this);
-          })
-        }
+        // if (typeof item.validate.required !== "undefined" && item.validate.required) {
+        //   $(t.form).find('[name="' + item.name + '"]').on('focusout', function(e) {
+        //     t.validate(item.validate, this.value, this);
+        //   })
+        // }
 
       })
     }
@@ -51,52 +60,104 @@ class Validator {
     var t = this;
     switch (rule) {
       case 'required':
-        t.handleErrors(t.validateRequired(input, element), element);
+        t.checkProgress(rule, t.validateRequired(input, element), element);
         break;
       case 'email':
-        t.handleErrors(t.validateEmail(input), element);
+        t.checkProgress(rule, t.validateEmail(input), element);
         break;
       case 'min':
-        t.handleErrors(t.validateMinLength(input, ruleParameters), element);
+        t.checkProgress(rule, t.validateMinLength(input, ruleParameters), element);
         break;
       case 'max':
-        t.handleErrors(t.validateMaxLength(input, ruleParameters), element);
+        t.checkProgress(rule, t.validateMaxLength(input, ruleParameters), element);
         break;
       case 'type':
-      t.handleErrors(t.validateType(input,ruleParameters),element);
-      break;
+        t.checkProgress(rule, t.validateType(input, ruleParameters), element);
+        break;
+      default:
+        throw Error('Not a valid validatior setting. Check your validate:{} parameters')
+        break;
     }
   }
   validate(validationRules, input, element) {
-    // console.log(element);
     var t = this;
     // console.log(validationRules,input);
     for (var rule in validationRules) {
-      // console.log(rule);parentElement;
-      t.options(rule, validationRules[rule], input, element);
+      let ruleParameter = validationRules[rule];
+      if (typeof ruleParameter === "string") {
+        let tempArray = ruleParameter.split("|");
+        //tempArray > 1
+        if (tempArray.length > 0) {
+          tempArray.map((value) => {
+            if (value.indexOf('when:') === -1) {
+              t.handleWhen(value);
+            } else if (value.indexOf('whenNot:') === 0) {
+              t.handleWhenNot(value);
+            }
+          })
+        }
+      }
+      t.options(rule, ruleParameter, input, element);
     }
   }
 
-  checkProgress(){
+  handleWhen(value) {
+    // /    console.log('When');
+
   }
+  handleWhenNot(value) {
+    // console.log('whenNot');
+  }
+
+  checkProgress(rule, action, element) {
+    var index = this.pendingElements.findIndex((item) => {
+      return item.name === element.name;
+    });
+
+    this.pendingElements[index].validate[rule] = action;
+
+    if(!action || action === 'failed'){
+      // this.errors.pending.push({'element':element.name,'rule':rule,'status':false})
+    }else{
+      this.errors.pending.map(item =>{
+        console.log(item.element === element.name && item.rule === rule);
+        if(item.element === element.name && item.rule === rule){
+        }
+      })
+    }
+    var status = this.pendingElements.every(item => {
+      return item.status;
+    });
+
+    var elementStatus = '';
+
+    if(status){
+      this.handleErrors(rule,action,element);
+      return validationSuccess();
+    }else{
+      this.handleErrors(rule,action,element);
+    }
+
+  }
+
   //Notify that everything has been validated.
-  validationSuccess(){
+  validationSuccess() {
     $(window).trigger('validation-successful');
+    console.log('successful');
   }
 
   errorTemplate(validationSettings) {
 
   }
-  handleErrors(action, element) {
+
+  handleErrors(rule, action, element) {
     var t = this;
     var target = (t.settings.displayErrorAt === 'element') ? $(t.form).find('[name="' + element.name + '"]') : $(t.form).find('[name="' + element.name + '"]').parent();
-
     if (action || action === 'success') {
       $(target).removeClass('validator-error').addClass('validator-success');
     } else if (!action || action === "failed") {
       $(target).removeClass('validator-success').addClass('validator-error');
       //add message based on the option
-
     }
   }
 
@@ -124,12 +185,12 @@ class Validator {
     return (input.length < length);
   }
   //
-  validateType(input,type){
+  validateType(input, type) {
     return (typeof input === type);
   }
 
   //regex
-  validateRegex(input,regex){
+  validateRegex(input, regex) {
     return input.test(regex);
   }
 }

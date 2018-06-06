@@ -10,7 +10,10 @@
       <div class="col">
         <input type="text" name="title" class="form-control" id="title" >
       </div>
-      <!-- <input type="text" name="subtitle"> -->
+      <hr/>
+      <div class="">
+        <!-- <input type="text" name="subtitle" class="form-control"> -->
+      </div>
       <input type="submit" value="Continue" class="form-control">
     </form>
 
@@ -24,24 +27,26 @@
       settings:{
         displayErrorAt: 'parent',
       },
+      messages:{
+          'min': 'Mininmum value is',
+          'max' : 'Max is ',
+      },
       needsValidation:[{
         'name' : 'title',
-        'listeners' : 'input',
+        'listeners' : 'input|focusout',
         'validate':{
-          'required' : true,
-          'type' : 'string',
-          'min'  : 2,
-          'max'  : 4,
-          'errorMessage': 'Please fill this shiet up',
+          // 'required' : true,
+          'min' : 2,
+          // 'max' : 5,
         }
-      },{
-        'name': 'subtitle',
-        'listeners' : 'input',
-        'validate':{
-          'required' : true,
-          'email' : 'string',
-          'errorMessage': 'What the fuck man',
-        }
+      // },{
+      //   'name': 'subtitle',
+      //   'listeners' : 'input',
+      //   'validate':{
+      //     'required' : 'whenNot:xxxx,max:2',
+      //     'email' : 'string',
+      //     'errorMessage': 'What the fuck man',
+      //   }
       }
       ]
     }
